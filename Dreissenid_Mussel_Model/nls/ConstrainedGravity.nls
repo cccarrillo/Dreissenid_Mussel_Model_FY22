@@ -1,0 +1,80 @@
+to initialize-parameters-boater
+
+ask lakes [
+  
+ ifelse Model-Scale = "Texas" 
+    [ifelse weight != nobody 
+      [set W lake-area-acres * weight]
+      [set W lake-area-acres]]                  ;######23 Feb 2018 added weight
+    [set W lake-area-sqm] 
+    
+    
+    set W-vect []                       ;vector of surface areas of the destination location
+    set A []                            ;scaling factor for location i
+    set C []               
+    set WC-alpha []
+    set T []                            ;number of uninfected boats leaving specific water bodies (i) going to j
+    set C-alpha []
+    set Patch-ID []                     ;list of patch ids for destination locations
+    set R []                            ;number of infected boats leaving specific water bodies (i) going to j
+    set P []                            ;percentage of all boats traveling to each watershed (j)
+    set uninfected-boats-arriving []
+    set infected-boats-arriving  []
+                      
+] 
+
+end
+
+;#############PURPOSE#######################################
+;####CALCULATE CONSTRAINED GRAVITY MODEL####################
+;###Bossenbrock et al 2007, Bookk from google books#########
+;############################################################
+
+to initialize-constrained-gravity                         ;Initializes and runs constrained gravity model at set up
+   
+ask lakes [  
+   set C-alpha map [x -> x ^ (- alpha)] C              ;creates a vector of C^-alpha
+   
+    
+   set WC-alpha (map * W-Vect C-alpha)                ;creates a vector of W*C^-alpha
+  ; print word "WC: " WC-alpha
+   
+   
+   set A (1 / (sum WC-alpha))                           ;creates a vector of A values
+   ;print word "A: " A 
+
+    set T map [x -> x  * (A * O)] WC-alpha              ;creates a vector of Tij values, where i is the home cell, and j is each destination
+   ;print word "T: " T
+
+    set R map [x -> x * (A * Z)] WC-alpha               ;calculates number of boats with zebra mussels (b/c Z is number boats with zebra mussels)
+  
+    set T (map - T R)                                   ;subtracts R from T (boats with zebra mussels from uninfected boats)
+
+  ] ;ask lakes
+
+end ;calculate constrained gravity
+
+
+to calculate-constrained-gravity                          ;Runs constrained gravity model during simulation (allows landscape to change)
+
+  ask lakes [
+    set T []
+    set R []
+    set count-infected-boats-arriving 0
+    set count-uninfected-boats-arriving 0
+    set T map [x -> x * (A * O)] WC-alpha                 ;creates a vector of Tij values, where i is the home cell, and j is each destination
+    set R map [x -> x * (A * Z)] WC-alpha                 ;calculates number of boats with zebra mussels (b/c Z is number boats with zebra mussels)
+   
+    set T (map - T R)                                     ;subtracts R from T (boats with zebra mussels from uninfected boats)
+  ]
+  
+end
+
+
+
+
+
+
+
+
+

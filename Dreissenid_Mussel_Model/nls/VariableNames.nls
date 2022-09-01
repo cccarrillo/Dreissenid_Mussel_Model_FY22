@@ -1,0 +1,259 @@
+breed [zebra-mussels zebra-mussel]
+
+breed [boats boat]
+breed [lakes lake]         ;making each one an individual turtle of a separate breed
+undirected-link-breed [yellow-links yellow-link]
+undirected-link-breed [green-links green-link]
+
+
+;#####################GLOBALS#####################
+globals [          ;global variables
+  
+  data
+  
+  spawn-temp       ;spawning temp
+  current-velocity 
+  
+  location
+  surface-area
+  total-lakes ;total number of patches with water
+  number-not-infected?; number of patches not infected with zebra mussels
+  number-infected?; number of patches infected with zebra mussels
+  
+  
+  gis-dataset
+  ;variables for logistic dispersal
+  logistic-A
+  logistic-B
+  logistic-Prob
+  turbulence
+  minx
+  maxx
+  miny
+  maxy
+  
+  lake-data
+  spawn ; designates if spawn even is happening,
+  
+  view1 view2 view3 view4 view5 view6 view7 view8 view9   ;GIS variables
+  boats-per-area ;boats per unit area
+  mean-hsi-uninfected
+  mean-hsi-infected
+  debug-boats-arriving
+  debug-boats-leaving
+  
+  centroid ;for US_STATES outline
+  idstate ;for state outline
+  Total-infected-lakes
+  total-lakes-removed-from-buffer
+  
+  BioBullet-logistic-B
+  BioBullet-logistic-A
+  Drawdown-logistic-B
+  Drawdown-logistic-A
+  
+]
+
+
+
+
+;#####################BREEDS#####################
+
+;zebra-mussels-own [identity]
+
+boats-own [boat-id destination-patch boat-r boat-infected?]
+
+lakes-own [
+  
+  lake-labels-id
+  
+  lake-area-sqkm 
+  lake-area-sqm 
+  lake-area-acres
+  name
+  state
+  farthestLakeName
+  farthestLakeState
+  farthestLakeDistance
+  FarthestLakeID
+  ;###################BOATER BEHAVIOR VARIABLES#########################
+  
+  O                                 ;number of boats at current location
+  W                                 ;surface of water body at the destination
+  W-vect                            ;vector of surface areas from destination locations
+  C                                 ;distance between cells
+  A                                 ;balancing factor that ensures all boaters leaving i reach destination j
+  C-alpha                           ;vector of distance b/w patches raised to -alpha
+  WC-alpha
+  T                                 ;number of uninfected boats at location i that will move to patch j (corresponding to patch-ID)
+  max-WC
+  Patch-ID                          ;vector of X Y Coordinates of patches with water. It matches the places in the T vector
+  cumulative-dist
+  R                                 ;number of infected boats leaving specific water bodies (i) to go to j
+  P                                 ;percentage of all boats traveling to each watershed (j)
+  Z                                 ;number of boats carrying zebra mussels in lake (i)
+  management-success
+  
+  uninfected-boats-arriving
+  infected-boats-arriving  
+  count-uninfected-boats-arriving   ;count of uninfected boats arriving
+  count-infected-boats-arriving     ;total number of boats arriving at each location j 
+  proportion-infected-boats  
+  count-of-max-T ;                  counts how many times this patch was the most attractive lake for other lakes 
+  MaxT  
+  initial-boats
+  initial-boats-25
+  initial-boats-50
+  
+  used?
+  polygon?
+  TEST-ID
+  areaSQkm
+  areaSQm
+  temporary1
+  temporary2
+  temporary3
+  OBJECTID
+  patch-OBJECTID
+  infected?
+  waterbody?
+  id
+  random-num
+  weight
+  
+  infest-reduction
+  
+  ;###################BUFFER VARIABLES#########################
+  
+  poslist
+  newC
+  newW
+  NewPatchID
+  lakes-in-buffer
+  
+  
+  
+  ;#####################ZEBRA MUSSEL VARIABLES#####################
+  zebra-mussel?                     ;presence of zebra mussels
+  eDNA                              ;Zebra Mussels detected wiht eDNA 
+  area-of-water-infected            ;proportion of water infected 
+  percent-surface-area-infected     ;percent of surface area infected
+  
+  Fish_Stocked 
+  Parks_Num 
+  Boat_Ramps
+  MaxDepth_m 
+  MaxDepth_f 
+  ZM_Present 
+  BOR_Region
+  Length_perimeter
+  Dist_Hwy
+  Near_Hwy
+  
+  Ph_min 
+  Ph_avg 
+  Ph_max 
+  Ca_min 
+  Ca_avg 
+  Ca_max
+  
+  Temp_avg
+  Temp_Max
+  Temp_Min
+  Temp_High
+  Temp_Low
+  Max>=90
+  Max<=32
+  Min<=32
+  Min<=0
+  
+  DO_min
+  DO_avg
+  DO_max
+  
+  Total_PRCP
+  Total_Snow
+  
+  Management
+  Advertise
+  
+  Latitude  ;carra added these to be able to put 
+  Longitude ;these variables the results file
+  FID       ;in order to pull into ARC 
+  
+  
+  ;suitability indices values for each environmental variable
+  patch-ammonia-SI
+  patch-calcium-SI
+  patch-hardness-SI
+  patch-conductivity-SI
+  patch-DO-SI
+  patch-chla-SI
+  patch-salinity-SI
+  patch-K-SI
+  patch-temp-SI
+  patch-spawn-temp-SI
+  patch-current-velocity-SI
+  patch-ph-SI
+  patch-turbulence-SI
+  
+  patch-surface-area-SI
+  
+  
+  patch-HSI                         ;overall HSI value per cell
+  probability-infection
+  
+  managed-reduction
+  
+]
+
+patches-own [
+  
+  this-lake  
+  
+  
+  patch-habitat-type
+  patch-surface-area 
+  
+  ;patch-specific environmental variables
+  patch-ammonia
+  patch-calcium
+  patch-hardness
+  patch-conductivity
+  patch-DO                        ; measured in mg / L  
+  patch-chla
+  patch-salinity
+  patch-K
+  patch-temp
+  patch-spawn-temp
+  patch-current-velocity
+  patch-ph
+  patch-Calcium-duration                   ; measured in number of consecutive days that Calcium is above a specified level
+  patch-Turbulence
+  ;turbulence-duration                   ; measured in number of consecutive days that turbulence is above a specified level
+  
+  
+  
+  
+  
+  ; pH from input file
+  ; Calcium from input file
+  ; DO from input file
+  patch-temperature-duration                ; measured in number of consecutive days that temperature is above a specified level
+  patch-pH-duration
+  patch-Turbulence-duration                        ; measured in number of consecutive days that Turbulence is above a specified level
+  rand-num
+  patch-DO-duration                         ; measured in number of consecutive days that DO is above a specified level
+  
+  Calcium-update                   ; current Calcium read from list
+  pH-update                        ; current pH read from list
+  Turbulence-update                ; current Turbulence read from list
+  Temp-update                      ; current temperature read from list
+  DO-update                        ; current DO read from list
+  
+  
+  
+] ;patches own
+
+
+

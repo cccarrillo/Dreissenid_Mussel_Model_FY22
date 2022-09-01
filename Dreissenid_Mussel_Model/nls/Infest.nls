@@ -1,0 +1,87 @@
+
+;#### Procedure estimates how many boats leaving lake j will have zebra mussels
+;### Partitions boats into uninfected/infected based on lake condition
+to estimate-zebra-mussel-infestation-in-lake  
+  
+  ask lakes [
+ 
+    
+    ifelse zebra-mussel? = True 
+   
+    [set percent-surface-area-infected infest-intensity / 100
+    set area-of-water-infected percent-surface-area-infected * W]
+   
+    [set percent-surface-area-infected 0
+    set area-of-water-infected 0] ;
+ 
+    set Z O * percent-surface-area-infected  ;calculates the number of boats that are infected by zebra mussels
+
+  
+    
+  ]
+ 
+end
+
+
+
+to infest
+  
+    set probability-infection calculalte-prob-infect patch-hsi
+ 
+  
+    if count-infected-boats-arriving * probability-infection > boat-threshold  
+   
+      [set infected? TRUE set zebra-mussel? TRUE set color red]
+  
+end ;to infest
+
+to-report calculalte-prob-infect [x]
+  
+  If infest-type = "Null" [                               ;#####Infestation with no management, no restrictions 
+    report 1
+  ]
+  
+  If infest-type = "Carra_test" [                               ;#####Infestation with no management, no restrictions 
+    ifelse (ph_min >= 8.5) and (ca_min >= 28) [report 1]
+    [report 0]
+  ]
+  
+  If infest-type = "HSI" [         
+   
+    ifelse x <= 0.4
+      [report 0]
+    [ifelse x >= 0.8 
+      [report x]
+      [report util-logistic-equation x]
+    ]
+  ]
+
+  If infest-type = "Management" [         
+    report Management * 0
+   ]
+  
+  
+  If infest-type = "Dreissenid_Survival" [         
+    report transport-survival
+  ]
+    
+  
+  If infest-type = "Survival_HSI" [         
+
+    let tmp1 0 
+    ifelse x <= 0.4
+    [set tmp1 0]
+    [ifelse x >= 0.8 
+      [set tmp1 x]
+      [set tmp1 util-logistic-equation x]
+      
+    ]
+    report transport-survival * tmp1
+  ]
+
+
+end
+
+
+
+

@@ -1,0 +1,28 @@
+to create-protoytpe
+  let maxXX 15 let maxYY 15
+  resize-world 0 maxXX 0 maxYY
+  
+  let newPatchSize 40
+  set-patch-size newPatchSize ; if patches are too small, increase new patch size
+  
+  create-lakes 5 [
+    set hidden? false
+    set size 1 set color yellow set shape "circle"         
+    setxy random-pxcor random-pycor
+    set lake-labels-id who
+    set lake-area-acres util-random-range 75 25000
+    set lake-area-sqm util-random-range 75 25000
+    set initial-boats util-random-range 4 250 
+    set pcolor sky + 2
+    set this-lake lake-labels-id
+    set O initial-boats
+    set zebra-mussel? FALSE
+    set infected? FALSE
+    
+      ] 
+  
+ask n-of 1 lakes [set zebra-mussel? TRUE set color red set infected? true]
+
+  
+end; end to create prototype
+

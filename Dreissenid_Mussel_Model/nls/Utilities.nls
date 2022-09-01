@@ -1,0 +1,81 @@
+;File with utilities and reporters
+
+to-report max-positions [my-list]                   ;reporter that calculates positions of max items in list
+  let max-value max my-list
+  let indices n-values (length my-list) [x -> x]
+  let indices-and-values map [x -> list x item x my-list] indices
+  report map [x -> first x] filter [x -> item 1 x = max-value] indices-and-values
+end 
+
+to GIS-Setup [q1 q2]                                ;subroutine that colors features
+
+
+foreach gis:feature-list-of q1
+          [[x] ->
+        gis:set-drawing-color q2
+        gis:draw x 1.0
+        ;gis:fill x q2        
+      ] 
+      ask patches gis:intersecting q1
+  [ set pcolor q2 ]
+end
+
+to-report util-random-range [min-extreme max-extreme]                                            ;generates random integer between two values
+report random (max-extreme - min-extreme + 1) + min-extreme 
+end
+
+to util-clear-values                                             ;clears values to reinitialize gravity model between timesteps
+  
+  ask lakes [
+    set T []
+    set R []
+    set count-uninfected-boats-arriving 0
+    set count-infected-boats-arriving 0
+  ]
+  
+end
+
+to util-print-hsi
+  ask lakes [ 
+   print (word "Lake: " name " HSI: " patch-hsi)
+   
+  ]
+end
+
+
+to util-logistic-setup ;sets up logistic procedure
+  
+  ;at 50% cover, there is a probability of 0.25 that it will disperse
+  ;at 99% cover, there is a probability of 0.99 that it will disperse
+  
+       let X1 item 0 survival-threshold-HSI
+       let A1 item 1 survival-threshold-HSI
+       let X2 item 2 survival-threshold-HSI
+       let A2 item 3 survival-threshold-HSI
+
+ 
+       let D ln (A1 / (1 - A1))
+       let D1 ln (A2 / (1 - A2))
+       set logistic-B (D - D1) / (X1 - X2)
+       set logistic-A D - (logistic-B * X1)
+       
+       
+       ;independently recreated in MS Excel 8 Oct 2014
+       
+end 
+
+
+to-report util-logistic-equation [x]   
+  
+                                                                       
+     let logistic-Z  exp (logistic-A + (logistic-B * x)) ;calculate probability of boats carrying zebra mussels to new location based on surface area
+     report (logistic-Z / (1 + logistic-Z))     
+     
+     ;print word "probability of dispersal: " logistic-prob
+      
+end
+
+;Counts number of times a value appears in a list
+to-report util-frequency [an-item a-list]
+    report length (filter [ i -> i = an-item] a-list)
+end

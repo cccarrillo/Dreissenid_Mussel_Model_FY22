@@ -1,0 +1,16 @@
+to modify-initial-conditions
+  
+  
+  ;####CODE FOR ADDINNG ZEBRA MUSSELS
+  ;###JUST COPY PASTE ENTIRE LINE AND REPLACE LAKE NUMBER
+  
+  ask lake 5 [set zebra-mussel? TRUE set color red set infected? true]
+
+
+;#####CODE FOR REMOVING ZEBRA MUSSELS
+ ask lake 10 [set zebra-mussel? FALSE set infected? FALSE set color sky + 2 ]
+  
+  
+ 
+  
+end

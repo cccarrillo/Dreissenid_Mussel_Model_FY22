@@ -1,0 +1,147 @@
+;Calculates overall HSI for each cell
+;geometric mean is used for overall HSI value
+
+to calculate-HSI
+
+ask lakes [
+  
+    let tmp []
+    let tmp1 []
+   
+;   set patch-DO-SI 0.5
+;   set patch-temp-SI 0.5
+;   set patch-ph-SI 0.5
+;   set patch-calcium-SI 0.5
+     
+  
+  ;calculates SI values for paramters. 
+  ;NOTE: SI values for all environmental variables should be calculated, even for no data. The code is set up to filter out zeros or no data   
+   set patch-DO-SI calc-DOSI DO_avg
+   set patch-temp-SI calc-tempSI Temp_avg
+   set patch-ph-SI calc-phSI ph_avg
+   set patch-calcium-SI calc-calciumSI Ca_avg
+    
+   set tmp (list patch-DO-SI patch-temp-SI patch-ph-SI patch-calcium-SI)
+  
+   set tmp1 filter is-number? tmp
+   
+   let tmp2 length tmp1
+ 
+    ;print word "length of HSI vector: " tmp2
+   
+   set patch-hsi (reduce * tmp1) ^ (1 / tmp2)
+   
+    ;print (word name )
+    ;print (word "HSI: " patch-hsi ", List of SI values: " tmp ", List of reduced SI values: " tmp1 ", Length of vector: " tmp2)   
+;;    
+  
+   
+   ]
+
+ ; set mean-hsi-uninfected mean [patch-hsi] of lakes with [infected? = FALSE and patch-hsi > 0]
+ ; set mean-hsi-infected mean [patch-hsi] of lakes with [infected? = TRUE and patch-hsi > 0]
+ 
+  
+end 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; SI EQUATIONS ;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;Calculates SI for each variable
+;Equations from Bartell Report
+
+;#####PH
+to-report calc-phSI [x] 
+  if x = nobody or x = 0 [report "NA"]
+  if x <= 6 or x >= 9.8 [report 0.0000001]
+  if (x > 6) and (x <= 6.5) [report ((-1.2 + (0.2 * x)))]
+  if (x > 6.5) and (x <= 7.1) [report ((-1.53 + (0.25 * x)))]
+  if (x > 7.1) and (x <= 7.3) [report ((-17.5 + (2.5 * x)))]
+  if (x > 7.3) and (x <= 8.3) [report ((-1.08 + (0.25 * x)))]
+  if (x > 8.3) and (x <= 8.5) [report ((1 + (0 * x)))]
+  if (x > 8.5) and (x <= 9.4) [report ((3.36 + (-0.2778 * x)))]
+  if (x > 9.4) and (x <= 9.5) [report ((47.75 + (-5 * x)))]
+  if (x > 9.5) and (x < 9.8) [report ((8.17 +(-0.8333 * x)))]
+end
+
+;#####Calcium
+to-report calc-calciumSI [x]
+  if x = nobody or x = 0 [report "NA"]
+  if x <= 8 [report 0.0000001]
+  if (x > 8) and (x <= 12) [report ((-0.5 + (0.0625 * x)))]
+  if (x > 12) and (x <= 20) [report ((-0.13 + (0.0313 * x)))]
+  if (x > 20) and (x <= 26) [report ((-0.83 + (0.0667 * x)))]
+  if (x > 26) and (x <= 35) [report ((0.61 + (0.0111 * x)))]
+  if x >= 35 [report 1]
+
+end
+
+;#####DO
+to-report calc-DOSI [x]
+  ifelse x = nobody or x = 0 [report "NA"][report (1 / (1 + 6858 * ( EXP(-1.472 * x))))]
+end
+
+;#####Turbulence
+to-report calc-turbulenceSI [x]
+  ifelse x = nobody or x = 0 [report "NA"][report (1 / (1 + 0.001 * ( EXP(4.6045 * x))))]
+end
+
+;#####Temp
+to-report calc-tempSI [x]
+  if x = nobody or x = 0 [report "NA"]
+  if x < 22 [report (1 / (1 + 177517 * ( EXP(-0.863 * x))))] 
+  if x > 22  [report (1 / (1 + (5.7 * 10 ^ -12) * ( EXP(0.863 * x)))) ] 
+  if x = 22 [report 1]
+end
+
+to-report calc-DepthSI [x]
+  ifelse x < 5 [report 0][report x / (1.5 + x)]
+end
+
+
+
+to turbulence-counter; begin salinity counter procedure 
+ 
+ ifelse patch-turbulence < 5 or patch-turbulence > 35 [set patch-Turbulence-duration (patch-Turbulence-duration + 1)] [set patch-Turbulence-duration 0]
+  
+end ; end of salinity-counter  
+
+   
+to pH-counter; begin TSS counter procedure 
+ 
+ ifelse patch-pH > 10 [set patch-pH-duration (patch-pH-duration + 1)] [set patch-pH-duration 0]
+  
+end ; end of TSS-counter  
+
+to Calcium-counter; begin Calcium counter procedure 
+ 
+ ifelse patch-Calcium > 10 [set patch-Calcium-duration (patch-Calcium-duration + 1)] [set patch-Calcium-duration 0]
+  
+end ; end of TSS-counter  
+
+to temperature-counter; begin temperature counter procedure 
+ 
+ ifelse patch-temp > 18 [set patch-temperature-duration (patch-temperature-duration + 1)] [set patch-temperature-duration 0]
+  
+end ; end of temperature-counter  
+
+
+to DO-counter; begin DO counter procedure 
+ 
+ ifelse patch-DO < 2.5 [set patch-DO-duration (patch-DO-duration + 1)] [set patch-DO-duration 0]
+  
+end ; end of DO-counter
+
+to-report calc-spawntempSI [x]
+if x < 17 [report (1 / (1 + 120686.3 * (EXP (-1.90457 * x))))] 
+if x > 17  [report (1 / (1 + (8.3 * 10 ^ -12) * (EXP (1.90457 * x)))) ] 
+if x = 22 [report 1]
+end 
+
+
+
+

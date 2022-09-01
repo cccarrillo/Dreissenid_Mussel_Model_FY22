@@ -1,0 +1,83 @@
+
+
+to setup-GIS-BOR
+  no-display ;turns off display to load gis files quicker
+  
+  set view1 gis:load-dataset "maps/US_STATES.shp"             ;imports US State map shapefile
+  
+  set view3 gis:load-dataset "maps/USBR_INPUT_1.shp"            ;inputs the USBR shapefile
+  
+  gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of view1) (gis:envelope-of view3))            ;creates boundary
+  
+  
+  let expanded-envelope gis:envelope-of view3
+  
+  let x-expansion (item 1 expanded-envelope - item 0 expanded-envelope) * 0.1 
+  let y-expansion (item 3 expanded-envelope - item 2 expanded-envelope) * 0.01 
+  let new-envelope (list (item 0 expanded-envelope - x-expansion) (item 1 expanded-envelope + x-expansion) (item 2 expanded-envelope - y-expansion) (item 3 expanded-envelope + y-expansion)) 
+  
+  
+  
+  ;; loop through patches and find centroid to set up ID
+  let i 1
+  foreach gis:feature-list-of view1 [ feature ->
+    ask patches gis:intersecting feature [
+      set centroid gis:location-of gis:centroid-of feature
+      ask patch item 0 centroid item 1 centroid [
+        set idstate i
+      ]
+    ]
+    set i i + 1
+  ]
+  gis:set-drawing-color white
+  gis:draw view1 1
+  
+  
+  
+  foreach gis:feature-list-of view3 [
+    [x] ->
+    
+    set location gis:location-of (first (first (gis:vertex-lists-of x))) 
+    ; location will be an empty list if the point lies outside the 
+    ; bounds of the current NetLogo world, as defined by our current 
+    ; coordinate transformation 
+    
+    if not empty? location 
+    
+    [ create-lakes 1 
+      [ set xcor item 0 location 
+        set ycor item 1 location 
+        set size .15 set color yellow set shape "circle"         
+        set name gis:property-value x "WaterName" ; reads polygon id from shapefile
+        set lake-labels-id gis:property-value x "IDNum"     
+        set lake-area-sqm gis:property-value x "AreaSqKm1" ; reads surface area in square kilometers from 
+        ifelse gis:property-value x "ZM_EST" = 1 [set zebra-mussel? TRUE set color red set infected? true][set zebra-mussel? FALSE set infected? FALSE set color sky + 2 ];
+        
+        set Ph_min gis:property-value x "Ph_min";
+        set Ph_avg gis:property-value x "Ph_avg";
+        set Ph_max gis:property-value x "Ph_max";
+        set Ca_min gis:property-value x "Ca_min";
+        set Ca_avg gis:property-value x "Ca_avg";
+        set Ca_max gis:property-value x "Ca_max";
+        set State gis:property-value x "State_1";
+        set latitude gis:property-value x "Latitude";
+        set longitude gis:property-value x "Longitude";
+        set FID gis:property-value x "FID_";
+        set this-lake lake-labels-id;
+        set initial-boats gis:property-value x "INITIALBOA"
+        set O initial-boats    ;0.036195763 is the average number of boats per person based on data collected from https://www.census.gov/newsroom/press-releases/2019/popest-nation.html
+                                            ;and https://www.statista.com/statistics/240634/registered-recreational-boating-vessels-in-the-us/
+        
+        ;if CA_min = 0 [set CA_min 0.0001] 
+      ] 
+    ] 
+  ]
+  ;  
+  
+  display ;turns display back on
+  ask lakes [set id this-lake]
+  
+end ;GIS setup
+
+
+

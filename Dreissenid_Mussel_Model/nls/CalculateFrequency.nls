@@ -1,0 +1,31 @@
+;;####ONLY USE FOR NON-INFECTED SITUATIONS
+
+
+
+to calculate-most-frequent-destination
+
+
+ask lakes [
+
+;print word "T patch-set: " self
+
+
+let Position-of-max position (max T) T                     ;calculates position of the maximum value in the T vector
+;print word "Position-of-max: " Position-of-max
+
+let temp-ID item (position-of-max) Patch-ID                ;calculates the position of the patch XY with the max T value
+;print word "value of item: " temp-ID
+   
+    
+ask patch ([pxcor] of temp-ID ) ([pycor] of temp-ID) [     ;counter to keep track of which patch is the most attractive
+    ask lakes-here [set count-of-max-T count-of-max-T + 1]              ;counter keeps track of how many lakes send the most boats to this lake
+         
+    ]
+
+
+]
+
+
+end ;calculate most frequent destination
+
+

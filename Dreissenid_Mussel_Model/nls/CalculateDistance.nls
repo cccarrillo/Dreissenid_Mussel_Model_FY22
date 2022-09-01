@@ -1,0 +1,101 @@
+;Module calculates distance among points, and creates a list of surface areas of lakes for every other lake
+
+to calc-distance                           
+  
+  
+  let temp-patchID-vector []
+  
+  set total-lakes count lakes                                                    ;calculates total number of lakes in model domain
+  
+  ask lakes [
+    
+    ;print who
+    let numlayer total-lakes - 1                                                  ;sets number of patches to cycle through in the while statement
+                                                                                  ;print word "numlayer after ask lakes: " numlayer 
+    let temp-vector []
+    
+    
+    let calculate-distance []                                                     ;vector that holds intermediate distance calculations to destination locations (j) from source (i)
+    
+    
+    while [numlayer != 0] [                                                       ;loops through number of patches with water
+      
+      ;print word "numlayer after while: " numlayer
+      ask lakes with [distance myself > 0] [
+        ;print word "current patch: " self
+        
+        set temp-vector lput (W) temp-vector                                       ;adds the Wj value to the current cell
+                                                                                   ;print word "Temp-Vect: " temp-vector
+        
+        set temp-patchID-vector lput (self) temp-patchID-vector                    ;adds the patch coordinates from cell j to a vector in current cell
+                                                                                   ;print (word "current-patch Setting Patch ID: " self) 
+                                                                                   ;print word "temp Patch ID vector: " temp-patchID-vector
+        
+        
+        set calculate-distance lput (distance myself) calculate-distance          ;Adds distance b/w 2 patches to vector 
+                                                                                  ;set calculate-cumulative-distance lput (test) calculate-cumulative-distance                  ;Adds distance b/w 2 patches to vector 
+                                                                                  ;print word "distance: " calculate-distance
+        
+        
+        set numlayer numlayer - 1                                                 ;reduces number of layers
+                                                                                  ;print word "numlayer after numlayer - 1: " numlayer
+        
+      ] ; ask patches with water and distance>0                                                           
+      
+    ] ;while numlayer !=0 (distance calculation loop)
+    
+    
+    set C calculate-distance                                                     ;sets lake variable C - distance to all other lakes
+                                                                                 ; print word "C: " C
+    
+    set W-vect temp-vector                                                       ;sets lake variable W-vect (surface area of all other lakes)
+                                                                                 ;print word "W-vect: " W-vect
+    
+    set Patch-ID temp-patchID-vector                                            ;sets lake variable Patch ID (patch-ID is vector of other patch locations)
+                                                                                ;  print word "Patch ID vector: " Patch-ID
+    set temp-patchID-vector []
+    
+    
+    
+  ] ;ask lakes
+  
+  
+  
+end ;calc distance
+
+to calculate-buffer
+  
+  ask lakes [
+        
+    set poslist map [i -> ifelse-value i <= buffer-dist [0][1]] C             ;creates a reference list of lakes in buffer (0) or out of buffer (1)
+    set lakes-in-buffer util-frequency 0 poslist                              ;calculates how many lakes in the buffer
+    
+    set newC map [i -> first i ]  filter [i -> last i = 0]  (map [[x y] -> list x y] C poslist)         ;creates a new list of only lakes within buffer 
+    set newW map [i -> first i ]  filter [i -> last i = 0]  (map [[x y] -> list x y] W-vect poslist)
+    set newPatchID map [i -> first i ]  filter [i -> last i = 0]  (map [[x y] -> list x y] Patch-ID poslist)
+    
+    set C newC                      ;redimensions vectors to contain only lakes within buffer
+    set W-vect newW
+    set Patch-ID newPatchID
+     
+  ]
+
+  set total-lakes-removed-from-buffer count lakes with [lakes-in-buffer = 0]
+  ask lakes with [lakes-in-buffer = 0] [die]
+  print word "Total lakes removed: " total-lakes-removed-from-buffer
+  
+end
+
+to calc-max-distance ;Procedure to calculate farthest lake & identify 
+
+  ask lakes [
+    
+    set farthestLakeDistance max C
+    let greatestlake position (max C) C
+    
+    set FarthestLakeId item (greatestlake) patch-id
+    set farthestLakestate [state] of FarthestLakeId
+    set farthestLakeName [name] of FarthestLakeId
+  ]
+  
+end

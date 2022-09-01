@@ -1,0 +1,114 @@
+; management options to decrease number of infested boats leaving a lake
+
+to manage
+  
+  ask lakes
+  [
+    
+    ;set Z Z * calc-management patch-hsi
+    
+    
+    set management-success calc-management patch-hsi
+ 
+  
+    set Z count-infected-boats-arriving * management-success   
+  
+    
+  ]
+end
+
+to BioBullet-logistic-setup ;sets up logistic procedure for BioBullet management option
+
+  
+       let X1 0.60  ;the minumum HSI that a lake has to be included in this calculation
+       let A1 .60   ;the minumum amount of decrease in number of infested boats
+       let X2 1.00  ;the maximum HSI that a lake has to be included in this calculation
+       let A2 .80   ;the maximum amount of decrease in number of infested boats
+
+ 
+       let D ln (A1 / (1 - A1))
+       let D1 ln (A2 / (1 - A2))
+       set BioBullet-logistic-B (D - D1) / (X1 - X2)
+       set BioBullet-logistic-A D - (logistic-B * X1)
+       
+       
+       ;independently recreated in MS Excel 8 Oct 2014
+       
+end 
+
+
+to-report BioBullet-logistic-equation [x]   
+  
+                                                                       
+     let BioBullet-logistic-Z  exp (BioBullet-logistic-A + (BioBullet-logistic-B * x)) ;calculate probability of boats carrying zebra mussels to new location based on surface area
+     report (BioBullet-logistic-Z / (1 + BioBullet-logistic-Z))     
+     
+     ;print word "probability of dispersal: " logistic-prob
+      
+end
+
+to Drawdown-logistic-setup ;sets up logistic procedure for BioBullet management option
+
+  
+       let X1 0.60  ;the minumum HSI that a lake has to be included in this calculation
+       let A1 .20   ;the minumum amount of decrease in number of infested boats
+       let X2 1.00  ;the maximum HSI that a lake has to be included in this calculation
+       let A2 .40   ;the maximum amount of decrease in number of infested boats
+
+ 
+       let D ln (A1 / (1 - A1))
+       let D1 ln (A2 / (1 - A2))
+       set Drawdown-logistic-B (D - D1) / (X1 - X2)
+       set Drawdown-logistic-A D - (logistic-B * X1)
+       
+       
+       ;independently recreated in MS Excel 8 Oct 2014
+       
+end 
+
+
+to-report Drawdown-logistic-equation [x]   
+  
+                                                                       
+     let Drawdown-logistic-Z  exp (Drawdown-logistic-A + (Drawdown-logistic-B * x)) ;calculate probability of boats carrying zebra mussels to new location based on surface area
+     report (Drawdown-logistic-Z / (1 + Drawdown-logistic-Z))     
+     
+     ;print word "probability of dispersal: " logistic-prob
+      
+end
+
+
+to-report calc-management [x]
+  
+  if Management-Options = "Null"
+  [
+    report 1
+  ]
+  if Management-Options = "BioBullet"
+  [
+    
+    ifelse x <= 0.6
+    [report 0]
+    [ifelse x >= 0.8
+      [report x]
+      [report BioBullet-logistic-equation x]
+    ]
+  ]
+  
+  if Management-Options = "Lake-Drawdown"
+  [
+    ifelse x <= 0.6
+    [report 0]
+    [ifelse x >= 0.8
+      [report x]
+      [report Drawdown-logistic-equation x]
+    ]
+    
+  ]
+  if Management-Options = "Cleaning-Station"
+  [
+    report Management_Efficiency * count-infected-boats-arriving
+  ]
+  
+end 
+

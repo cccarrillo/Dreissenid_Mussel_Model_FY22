@@ -1,0 +1,82 @@
+;Module determines how many boats arrive at location
+
+to calculate-boat-movement 
+
+  ;print (word "Boat movement module")
+  ;ask n-of 1 lakes [
+  ;file-open output-file-debug 
+ 
+    
+  foreach Patch-ID [[x] ->                                   ;loops through the list of other lakes 
+
+    let Position-of-ID position (x) Patch-ID                ;Dimensions variable to determine position of current patch id in patch-ID vector
+    ;print word "Position in vector: " Position-of-ID
+    
+    ;file-type (word who ",")      ;####    
+    let temp-ID item (Position-of-ID) Patch-ID              ;creates an agentset of 1 by reporting the value of the item in the position-of-id space
+    ;print word "Receiving Lake: " Temp-ID
+    ;file-type (word temp-ID ",")
+    
+    let temp-R item (Position-of-ID) R                      ;calculates the position of the patch XY with to match position of Patch-ID Vector R (R = #boats infected leaving lake to go to toher lakes)
+    ;print word "Infected boats: " Temp-R
+    ;file-type (word temp-R ",")
+    
+    Let temp-T item (Position-of-ID) T
+    ;print word "Uninfected boats: " Temp-T
+    ;file-print (word temp-T ",")
+    
+    let lst-tmp (list temp-ID temp-R Temp-T)
+    ;print word "List: " lst-tmp
+    
+     
+    ask temp-ID [                                             ;delivers boats to the target lake
+     
+           
+    ;    print word "receiving lake: " who
+     ;   print word "Infected boats: " Temp-R
+       ; print word "UnInfected boats: " Temp-T
+     ;   print word "count-infected-boats-arriving: "  count-infected-boats-arriving
+       ; print word "count-uninfected-boats-arriving: "  count-uninfected-boats-arriving
+      
+        set count-infected-boats-arriving count-infected-boats-arriving + temp-R         ;total number of INFECTED boats that arrive at lakes  
+        set count-uninfected-boats-arriving count-uninfected-boats-arriving + Temp-T     ;total number of UNINFECTED Boats that arrive to lake 
+        
+      ;  print word "count-infected-boats-arriving + Temp R: "  count-infected-boats-arriving
+        ;print word "count-uninfected-boats-arriving+ Temp T: "  count-uninfected-boats-arriving
+  
+      ] ;ask Temp-ID
+    ] ;forEach Patch-ID
+  ;] ;ask lakes
+  ;print word "uninfected-boats-arriving list: " uninfected-boats-arriving
+  ;file-close
+;  print (word "END Boat movement module")
+end
+
+to calculate-boat-movement-original 
+  ;print (word "Boat movement module")
+ ask lakes [
+    
+    foreach Patch-ID [[x] ->                                   ;loops through the list of other lakes 
+
+      let Position-of-ID position (x) Patch-ID                ;Dimensions variable to determine position of current patch id in patch-ID vector
+     ; print word "Position in vector: " Position-of-ID
+
+      let temp-ID item (Position-of-ID) Patch-ID              ;reports the value of the item in the position-of-id space
+      ;print word "Value of item: " Temp-ID
+
+      let temp-R item (Position-of-ID) R                      ;calculates the position of the patch XY with to match position of Patch-ID Vector R (R = #boats infected leaving lake to go to toher lakes)
+      ;print word "Temp-R: " Temp-R
+      Let temp-T item (Position-of-ID) T
+
+            ask patch ([pxcor] of temp-ID) ([pycor] of temp-ID) [     ;counter to keep track of which patches are providing infected boats  
+              ask lakes-here [
+               set count-infected-boats-arriving count-infected-boats-arriving + temp-R         ;total number of INFECTED boats that arrive at lakes  
+               set count-uninfected-boats-arriving count-uninfected-boats-arriving + Temp-T     ;total number of UNINFECTED Boats that arrive to lake 
+          
+        ] ;ask lakes here
+  
+      ] ;ask patch pxcore
+    ] ;forEach Patch-ID
+  ] ;ask lakes
+  ;print (word "END Boat movement module")
+end

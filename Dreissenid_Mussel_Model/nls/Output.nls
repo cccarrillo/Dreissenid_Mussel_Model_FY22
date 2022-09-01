@@ -1,0 +1,110 @@
+globals [output-file-lakes output-file-2 output-file-debug]
+
+to initialize-output-file-lakes
+
+  ;Open output file
+  ;First, delete file rather than appending to it
+   set output-file-lakes (word "Results/Lake_Results_" behaviorspace-run-number ".csv")
+   
+  if(file-exists? output-file-lakes)
+  [carefully [file-delete output-file-lakes][print error-message]]
+  
+  file-open output-file-lakes
+  
+  ;Write main heading and column headings
+  file-type "FID,"
+  file-type "Iteration,"
+  file-type "Latitude,"
+  file-type "Longitude,"
+  file-type "State,"
+  file-type "Lake,"
+  file-type "Lake ID,"
+  file-type "Lake Size km2,"
+  file-type "Number of Lakes in Buffer,"
+  file-type "Infected?,"
+  file-type "Infect Reduction Type,"
+  file-type "HSI,"
+  file-type "Probability of Infection,"
+  file-type "Boat Threshold," 
+  file-type "Initial Boats," 
+  file-type "Uninfected Boats Arriving,"
+  file-type "Infected Boats Arriving," 
+  ;file-type "Infected boats * prob of infection," 
+  file-type "Total Boats Arriving,"
+  file-print "Total Boats Leaving"   ;###LAST LINE OF OUTPUT NEEDS TO BE 'FILE-PRINT'
+ 
+  
+ file-close    ;close file
+ 
+ 
+end ; end of "output-individual"
+
+
+
+to output-results-lakes
+  
+file-open output-file-lakes
+  
+  file-type (word FID ",")
+  file-type (word Ticks ",")
+  file-type (word Latitude ",")
+  file-type (word Longitude ",")
+  file-type (word State ",")
+  file-type (word name ",")
+  file-type (word lake-labels-id ",")
+  file-type (word W ",")
+  file-type (word lakes-in-buffer ",")
+  file-type (word infected? ",")
+  file-type (word infest-type ",")
+  file-type (word patch-hsi ",")
+  file-type (word Probability-infection ",")
+  file-type (word boat-threshold ",")
+  file-type (word O ",")
+  file-type (word count-uninfected-boats-arriving ",")  
+  file-type (word count-infected-boats-arriving ",") 
+
+  let TotalBoats count-uninfected-boats-arriving + count-infected-boats-arriving
+  file-type (word TotalBoats ",")  
+  
+  
+  Let total-boats-lake (sum T) + (sum R)
+  file-print (word total-boats-lake ",")      ;###LAST LINE OF OUTPUT NEEDS TO BE 'FILE-PRINT'
+  
+  
+
+file-close     ;close file
+  
+
+
+;##################END FILE 2 ###################################  
+  
+end
+
+to initialize-output-debug
+
+  ;Open output file
+  ;First, delete file rather than appending to it
+   set output-file-debug (word "Results/debug.csv")
+
+  if(file-exists? output-file-debug)
+  [carefully [file-delete output-file-debug][print error-message]]
+  
+  file-open output-file-debug
+  
+  ;Write main heading and column headings
+  file-type "From Lake,"
+  ;file-type "Initial Boats," 
+  file-type "Receiving Lake,"
+  file-type "Infected Boats Arriving at Receiving Lake," 
+  file-print "UnInfected Boats Arriving at Receiving Lake," 
+  ;file-print "Total Boats Leaving"   ;###LAST LINE OF OUTPUT NEEDS TO BE 'FILE-PRINT'
+
+  
+ file-close    ;close file
+ 
+ 
+end ; end of "output-individual"
+
+  
+
+  
