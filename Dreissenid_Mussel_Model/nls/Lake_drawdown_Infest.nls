@@ -1,0 +1,68 @@
+;;;;creating the infestation based on lake drawdown
+
+
+to random-group
+  set random1? n-of random 0.5 lakes set random1? true
+  if random1? = false [set random2? true]
+  ;set random2? not member? random1? [random1?] set random2? true
+  ask lakes [
+  if random1? = true
+  [
+    set drawdown-number 5 + random 35
+    ;set random1? true
+  ]
+  if random2? = true
+  [
+    set drawdown-number random 6
+    ;set random2? true
+  ]
+  ]
+end 
+
+to Drawdown-logistic-setup ;sets up logistic procedure for BioBullet management option
+
+  
+       let X1 5  ;the minumum HSI that a lake has to be included in this calculation
+       let A1 .20   ;the minumum amount of decrease in number of infested boats
+       let X2 30  ;the maximum HSI that a lake has to be included in this calculation
+       let A2 .40   ;the maximum amount of decrease in number of infested boats
+
+ 
+       let D ln (A1 / (1 - A1))
+       let D1 ln (A2 / (1 - A2))
+       set Drawdown-logistic-B (D - D1) / (X1 - X2)
+       set Drawdown-logistic-A D - (logistic-B * X1)
+       
+       
+       ;independently recreated in MS Excel 8 Oct 2014
+       
+end 
+
+
+to-report Drawdown-logistic-equation [x]   
+  
+                                                                       
+     let Drawdown-logistic-Z  exp (Drawdown-logistic-A + (Drawdown-logistic-B * x)) ;calculate probability of boats carrying zebra mussels to new location based on surface area
+     report (Drawdown-logistic-Z / (1 + Drawdown-logistic-Z))     
+     
+     print word "probability of dispersal: " logistic-prob
+      
+end
+
+
+
+to drawdown-infest
+  ask lakes [random-group]
+  if random1? = true
+  [
+    ;if drawdown-number > 5
+    ;[set lake-drawdown-probability drawdown-logistic-equation drawdown-number]
+    set lake-drawdown-probability 0.2
+  ]
+  if random2? = true
+  [
+    set lake-drawdown-probability 0.4
+  ] 
+  if random-float 1 <= lake-drawdown-probability 
+  [set infected? FALSE set zebra-mussel? FALSE set color blue]
+end 

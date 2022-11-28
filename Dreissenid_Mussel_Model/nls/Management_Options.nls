@@ -7,15 +7,31 @@ to manage
     
     ;set Z Z * calc-management patch-hsi
     
-    
-    set management-success calc-management patch-hsi
- 
-  
-    set Z count-infected-boats-arriving * management-success   
-  
+    if Management-Options = "BioBullet"
+    [set management-success calc-management patch-hsi
+      set Z count-infected-boats-arriving * management-success] 
+     
     
   ]
 end
+
+to lake-drawdown-infesting
+      if Management-Options = "Lake-Drawdown"  
+  [ ask lakes [drawdown-infest] ]
+end
+
+to cleaning-station-reduction
+  if Management-Options = "Cleaning-Station"
+  [ask lakes
+  [
+    set cleaning-reduction Management_Efficiency
+    ;print word "management efficiency" cleaning-reduction
+    set Z Z - (Z * cleaning-reduction)
+    ;print word "Z " Z
+    ]
+  ]
+end
+
 
 to BioBullet-logistic-setup ;sets up logistic procedure for BioBullet management option
 
@@ -47,35 +63,6 @@ to-report BioBullet-logistic-equation [x]
       
 end
 
-to Drawdown-logistic-setup ;sets up logistic procedure for BioBullet management option
-
-  
-       let X1 0.60  ;the minumum HSI that a lake has to be included in this calculation
-       let A1 .20   ;the minumum amount of decrease in number of infested boats
-       let X2 1.00  ;the maximum HSI that a lake has to be included in this calculation
-       let A2 .40   ;the maximum amount of decrease in number of infested boats
-
- 
-       let D ln (A1 / (1 - A1))
-       let D1 ln (A2 / (1 - A2))
-       set Drawdown-logistic-B (D - D1) / (X1 - X2)
-       set Drawdown-logistic-A D - (logistic-B * X1)
-       
-       
-       ;independently recreated in MS Excel 8 Oct 2014
-       
-end 
-
-
-to-report Drawdown-logistic-equation [x]   
-  
-                                                                       
-     let Drawdown-logistic-Z  exp (Drawdown-logistic-A + (Drawdown-logistic-B * x)) ;calculate probability of boats carrying zebra mussels to new location based on surface area
-     report (Drawdown-logistic-Z / (1 + Drawdown-logistic-Z))     
-     
-     ;print word "probability of dispersal: " logistic-prob
-      
-end
 
 
 to-report calc-management [x]
@@ -88,27 +75,22 @@ to-report calc-management [x]
   [
     
     ifelse x <= 0.6
-    [report 0]
+    [report 1]
     [ifelse x >= 0.8
       [report x]
       [report BioBullet-logistic-equation x]
     ]
   ]
   
-  if Management-Options = "Lake-Drawdown"
-  [
-    ifelse x <= 0.6
-    [report 0]
-    [ifelse x >= 0.8
-      [report x]
-      [report Drawdown-logistic-equation x]
-    ]
-    
-  ]
-  if Management-Options = "Cleaning-Station"
-  [
-    report Management_Efficiency * count-infected-boats-arriving
-  ]
+;  if Management-Options = "Lake-Drawdown"
+;  [
+;    report drawdown-infest
+;    
+;  ]
+;  if Management-Options = "Cleaning-Station"
+;  [
+;    report Management_Efficiency * count-infected-boats-arriving
+;  ]
   
 end 
 

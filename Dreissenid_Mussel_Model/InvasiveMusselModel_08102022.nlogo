@@ -17,6 +17,7 @@ __includes
   "nls/Utilities.nls"                ;file that contains frequently used functions
   "nls/VariableNames.nls"            ;contains all global and patch variables
   "nls/Management_Options.nls"       ;calculates how management options impact infested boats leaving lakes
+  "nls/Lake_drawdown_infest.nls"     ;calculates the lake drawdown management option
 ]
 
 
@@ -83,7 +84,7 @@ to setup
   calc-max-distance                             ;in calcdistance.nls, calculates the farthest lake
   ;if manage? [manage]
 
-
+  if manage? [cleaning-station-reduction]
   initialize-constrained-gravity                ;in constrainedgravity.nls
 
   initialize-output-debug                       ;output file that prints all data (in ZebeOutput.nls)
@@ -121,7 +122,8 @@ to go                                         ;beginning of go procedure
 
   ;if manage? [manage]                           ;calculates decrease from management
 
-  ask lakes [manage]
+  if manage? [manage]
+  if manage? [cleaning-station-reduction]
 
   calculate-constrained-gravity               ;in constrainedgravity.nls
 
@@ -130,9 +132,12 @@ to go                                         ;beginning of go procedure
 
   ask lakes [calculate-boat-movement]         ;in CalcBoatMove
 
-  ask lakes [manage]
-
+  ;ask lakes [manage]
+  if manage? [cleaning-station-reduction]
   ask lakes with [infected? = FALSE][infest]  ;infests lakes (in infest.nls)
+
+  if manage? [lake-drawdown-infesting]
+
   ;ask lakes [manage]
 
   ;if manage? [manage]                           ;calculates decrease from management
@@ -268,7 +273,7 @@ CHOOSER
 Infest-type
 Infest-type
 "Null" "HSI" "Management" "Dreissenid_Survival" "Survival_HSI"
-1
+0
 
 SLIDER
 13
@@ -530,7 +535,7 @@ CHOOSER
 Management-Options
 Management-Options
 "Null" "BioBullet" "Lake-Drawdown" "Cleaning-Station"
-1
+3
 
 SLIDER
 373

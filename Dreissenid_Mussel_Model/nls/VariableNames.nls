@@ -122,7 +122,15 @@ lakes-own [
   weight
   
   infest-reduction
-  
+  ;drawdown-infest
+  lake-infest-manage
+ ; random-group
+  random1?
+  random2?
+  infesting-probability
+  drawdown-number
+  lake-drawdown-probability
+  cleaning-reduction
   ;###################BUFFER VARIABLES#########################
   
   poslist
