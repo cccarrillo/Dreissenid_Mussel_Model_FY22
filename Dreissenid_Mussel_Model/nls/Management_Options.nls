@@ -2,17 +2,24 @@
 
 to manage
   
-  ask lakes
-  [
+ ; ask lakes
+  ;[
     
     ;set Z Z * calc-management patch-hsi
-    
+;    If infest-type = "Null"                                ;#####Infestation with no management, no restrictions 
+;    [report 1]
+  
     if Management-Options = "BioBullet"
-    [set management-success calc-management patch-hsi
-      set Z count-infected-boats-arriving * management-success] 
+    [ask lakes [set management-success calc-management patch-hsi
+      set Z Z * management-success]]
+;   if Management-Options = "Lake-Drawdown"
+;    [ask lakes [drawdown-infest]]
+   if Management-Options = "Cleaning-Station"
+   [ask lakes [set cleaning-reduction Management_Efficiency
+      set Z Z - (Z * cleaning-reduction)]]
      
     
-  ]
+ ; ]
 end
 
 to lake-drawdown-infesting
@@ -20,17 +27,17 @@ to lake-drawdown-infesting
   [ ask lakes [drawdown-infest] ]
 end
 
-to cleaning-station-reduction
-  if Management-Options = "Cleaning-Station"
-  [ask lakes
-  [
-    set cleaning-reduction Management_Efficiency
-    ;print word "management efficiency" cleaning-reduction
-    set Z Z - (Z * cleaning-reduction)
-    ;print word "Z " Z
-    ]
-  ]
-end
+;to cleaning-station-reduction
+;  if Management-Options = "Cleaning-Station"
+;  [ask lakes
+;  [
+;    set cleaning-reduction Management_Efficiency
+;    ;print word "management efficiency" cleaning-reduction
+;    set Z Z - (Z * cleaning-reduction)
+;    ;print word "Z " Z
+;    ]
+;  ]
+;end
 
 
 to BioBullet-logistic-setup ;sets up logistic procedure for BioBullet management option

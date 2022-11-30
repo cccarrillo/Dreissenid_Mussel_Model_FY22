@@ -45,7 +45,7 @@ to-report Drawdown-logistic-equation [x]
      let Drawdown-logistic-Z  exp (Drawdown-logistic-A + (Drawdown-logistic-B * x)) ;calculate probability of boats carrying zebra mussels to new location based on surface area
      report (Drawdown-logistic-Z / (1 + Drawdown-logistic-Z))     
      
-     print word "probability of dispersal: " logistic-prob
+     ;print word "probability of dispersal: " logistic-prob
       
 end
 
