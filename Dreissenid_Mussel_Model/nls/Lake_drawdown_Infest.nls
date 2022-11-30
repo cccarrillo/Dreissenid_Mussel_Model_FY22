@@ -63,6 +63,6 @@ to drawdown-infest
   [
     set lake-drawdown-probability 0.4
   ] 
-  if random-float 1 <= lake-drawdown-probability 
+  if random-float 1 <= lake-drawdown-probability and infected? = True
   [set infected? FALSE set zebra-mussel? FALSE set color blue]
 end 

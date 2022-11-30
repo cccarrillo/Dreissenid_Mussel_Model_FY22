@@ -123,6 +123,7 @@ to go                                         ;beginning of go procedure
   ;if manage? [manage]                           ;calculates decrease from management
 
   if manage? [manage]
+  if manage? [lake-drawdown-infesting]
   ;if manage? [cleaning-station-reduction]
 
   calculate-constrained-gravity               ;in constrainedgravity.nls
@@ -131,7 +132,7 @@ to go                                         ;beginning of go procedure
 
 
   ask lakes [calculate-boat-movement]         ;in CalcBoatMove
-  if manage? [lake-drawdown-infesting]
+
   ;ask lakes [manage]
   ;if manage? [cleaning-station-reduction]
   ask lakes with [infected? = FALSE][infest]  ;infests lakes (in infest.nls)
@@ -535,7 +536,7 @@ CHOOSER
 Management-Options
 Management-Options
 "Null" "BioBullet" "Lake-Drawdown" "Cleaning-Station"
-3
+2
 
 SLIDER
 373
