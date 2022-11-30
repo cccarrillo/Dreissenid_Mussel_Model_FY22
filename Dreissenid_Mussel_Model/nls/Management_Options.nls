@@ -2,24 +2,23 @@
 
 to manage
   
- ; ask lakes
-  ;[
+  ask lakes
+  [
     
     ;set Z Z * calc-management patch-hsi
-;    If infest-type = "Null"                                ;#####Infestation with no management, no restrictions 
-;    [report 1]
+
   
     if Management-Options = "BioBullet"
-    [ask lakes [set management-success calc-management patch-hsi
-      set Z Z * management-success]]
+    [set management-success calc-management patch-hsi
+      set Z Z * management-success]
 ;   if Management-Options = "Lake-Drawdown"
 ;    [ask lakes [drawdown-infest]]
    if Management-Options = "Cleaning-Station"
-   [ask lakes [set cleaning-reduction Management_Efficiency
-      set Z Z - (Z * cleaning-reduction)]]
+   [set cleaning-reduction Management_Efficiency
+      set Z Z - (Z * cleaning-reduction)]
      
     
- ; ]
+  ]
 end
 
 to lake-drawdown-infesting

@@ -14,6 +14,7 @@ to estimate-zebra-mussel-infestation-in-lake
     [set percent-surface-area-infected 0
     set area-of-water-infected 0] ;
  
+    
     set Z O * percent-surface-area-infected  ;calculates the number of boats that are infected by zebra mussels
     ;print (word "Z set from infest: " z)
 

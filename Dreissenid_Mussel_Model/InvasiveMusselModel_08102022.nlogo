@@ -78,13 +78,13 @@ to setup
 
   Util-logistic-setup
   initialize-parameters-boater                  ;constrainedgravity.nls
-  estimate-zebra-mussel-infestation-in-lake     ;in infest.nls
+  ;estimate-zebra-mussel-infestation-in-lake     ;in infest.nls
   calc-distance                                 ;calcdistance.nls
   if buffer? [calculate-buffer]                 ;calculate buffer zones
   calc-max-distance                             ;in calcdistance.nls, calculates the farthest lake
   ;if manage? [manage]
 
-  if manage? [cleaning-station-reduction]
+  ;if manage? [cleaning-station-reduction]
   initialize-constrained-gravity                ;in constrainedgravity.nls
 
   initialize-output-debug                       ;output file that prints all data (in ZebeOutput.nls)
@@ -123,7 +123,7 @@ to go                                         ;beginning of go procedure
   ;if manage? [manage]                           ;calculates decrease from management
 
   if manage? [manage]
-  if manage? [cleaning-station-reduction]
+  ;if manage? [cleaning-station-reduction]
 
   calculate-constrained-gravity               ;in constrainedgravity.nls
 
@@ -131,12 +131,12 @@ to go                                         ;beginning of go procedure
 
 
   ask lakes [calculate-boat-movement]         ;in CalcBoatMove
-
+  if manage? [lake-drawdown-infesting]
   ;ask lakes [manage]
-  if manage? [cleaning-station-reduction]
+  ;if manage? [cleaning-station-reduction]
   ask lakes with [infected? = FALSE][infest]  ;infests lakes (in infest.nls)
 
-  if manage? [lake-drawdown-infesting]
+
 
   ;ask lakes [manage]
 
@@ -546,7 +546,7 @@ Management_Efficiency
 Management_Efficiency
 0
 1
-0.5
+0.75
 0.01
 1
 NIL
