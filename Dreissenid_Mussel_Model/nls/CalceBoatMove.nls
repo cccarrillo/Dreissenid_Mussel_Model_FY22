@@ -41,7 +41,7 @@ to calculate-boat-movement
         set count-infected-boats-arriving count-infected-boats-arriving + temp-R         ;total number of INFECTED boats that arrive at lakes  
         set count-uninfected-boats-arriving count-uninfected-boats-arriving + Temp-T     ;total number of UNINFECTED Boats that arrive to lake 
         
-      ;  print word "count-infected-boats-arriving + Temp R: "  count-infected-boats-arriving
+        ;print word "count-infected-boats-arriving + Temp R: "  count-infected-boats-arriving
         ;print word "count-uninfected-boats-arriving+ Temp T: "  count-uninfected-boats-arriving
   
       ] ;ask Temp-ID

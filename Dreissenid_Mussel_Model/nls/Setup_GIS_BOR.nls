@@ -5,7 +5,7 @@ to setup-GIS-BOR
   
   set view1 gis:load-dataset "maps/US_STATES.shp"             ;imports US State map shapefile
   
-  set view3 gis:load-dataset "maps/USBR_INPUT_1.shp"            ;inputs the USBR shapefile
+  set view3 gis:load-dataset "maps/USBR_INPUT_4.shp"            ;inputs the USBR shapefile
   
   gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of view1) (gis:envelope-of view3))            ;creates boundary
   
@@ -64,7 +64,9 @@ to setup-GIS-BOR
         set longitude gis:property-value x "Longitude";
         set FID gis:property-value x "FID_";
         set this-lake lake-labels-id;
-        set initial-boats gis:property-value x "INITIALBOA"
+        set initial-boats gis:property-value x "INITIALBOA";
+        set num-drawdown gis:property-value x "NUMDRAW";
+        set lake-volume gis:property-value x "VolCKM"
         set O initial-boats    ;0.036195763 is the average number of boats per person based on data collected from https://www.census.gov/newsroom/press-releases/2019/popest-nation.html
                                             ;and https://www.statista.com/statistics/240634/registered-recreational-boating-vessels-in-the-us/
         

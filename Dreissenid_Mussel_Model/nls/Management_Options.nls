@@ -8,22 +8,21 @@ to manage
     ;set Z Z * calc-management patch-hsi
 
   
-    if Management-Options = "BioBullet"
-    [set management-success calc-management patch-hsi
-      set Z Z * management-success]
-;   if Management-Options = "Lake-Drawdown"
-;    [ask lakes [drawdown-infest]]
+    ifelse Management-Options = "BioBullet"
+    [set management-success ((1.0E-11 * lake-volume) / 0.6)
+      set Z Z - (Z * management-success)]
+   [if Management-Options = "Lake-Drawdown"
+      [lake-drawdown-infesting]]
    if Management-Options = "Cleaning-Station"
-   [set cleaning-reduction Management_Efficiency
-      set Z Z - (Z * cleaning-reduction)]
+      [set cleaning-reduction Management_Efficiency
+        set Z Z - (Z * cleaning-reduction)]
      
     
-  ]
+    ]
 end
 
 to lake-drawdown-infesting
-      if Management-Options = "Lake-Drawdown"  
-  [ ask lakes [drawdown-infest] ]
+  drawdown-infest_CC
 end
 
 ;to cleaning-station-reduction
@@ -90,7 +89,11 @@ to-report calc-management [x]
   
 ;  if Management-Options = "Lake-Drawdown"
 ;  [
-;    report drawdown-infest
+;  ifelse x <= 5
+;  [report 0.4]
+;  ifelse x >= 20
+;  [report 0.2]
+;  [report Drawdown-logistic-equation x]
 ;    
 ;  ]
 ;  if Management-Options = "Cleaning-Station"

@@ -1,0 +1,82 @@
+;;Group 1 Drawdown Information
+
+;if # drawdown > 20, decrease number of infocming infested boats by 20%
+
+;if # drawdown 5 < x < 20, decrease # of incoming infested boats by percentage determined by logistic equation
+; the lower the #, the higher decrease percentage will be
+
+
+;;Group 2 Drawdown Information
+
+;if # drawdown < 5, decrease # of incoming infested boats by 40%
+
+to Drawdown-logistic-setup ;sets up logistic procedure for # drawdowns between 5-20
+
+  
+       let X1 5  ;the minumum # drawdowns in a lake required to enter this
+       let A1 .21   ;the minumum amount of decrease in number of infested boats
+       let X2 20  ;the maximum # drawdowns in a lake required to enter this
+       let A2 .39   ;the maximum amount of decrease in number of infested boats
+
+ 
+       let D ln (A1 / (1 - A1))
+       let D1 ln (A2 / (1 - A2))
+       set Drawdown-logistic-B (D - D1) / (X1 - X2)
+       set Drawdown-logistic-A D - (logistic-B * X1)
+       
+       
+       ;independently recreated in MS Excel 8 Oct 2014
+       
+end 
+
+
+to-report Drawdown-logistic-equation [x]   
+  
+                                                                       
+     let Drawdown-logistic-Z  exp (Drawdown-logistic-A + (Drawdown-logistic-B * x)) ;calculate probability of boats carrying zebra mussels to new location based on surface area
+     report (Drawdown-logistic-Z / (1 + Drawdown-logistic-Z))     
+     
+     ;print word "probability of dispersal: " logistic-prob
+      
+end
+
+
+
+to drawdown-infest_CC
+  ;ask lakes
+  
+;  ifelse x <= 5
+;  [set Z 0]
+;  ifelse x >= 20
+;  [set Z 0]
+;  ;[report Drawdown-logistic-equation x]
+;  [set Z 0.5]
+  if num-drawdown > 20
+  [
+
+    set Z Z - (Z * 0.2)
+    ;set Z 100
+  ]
+  if (num-drawdown > 5) and (num-drawdown <= 11)
+  [
+    set Z Z - (Z * 0.35)
+    ;set Z 0
+  ] 
+  if (num-drawdown < 11) and (num-drawdown <= 16)
+  [
+    set Z Z - (Z * 0.30)
+    ;set Z 0
+  ]
+  if (num-drawdown < 16) and (num-drawdown <= 20)
+  [
+    set Z Z - (Z * 0.25)
+    ;set Z 0
+  ]
+  if num-drawdown <= 5
+  [
+    set Z Z - (Z * 0.4)
+    ;set Z 0
+  ]
+;  if random-float 1 <= lake-drawdown-probability and infected? = True
+;  [set infected? FALSE set zebra-mussel? FALSE set color blue]
+end 
