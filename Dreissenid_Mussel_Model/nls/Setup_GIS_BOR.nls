@@ -5,7 +5,7 @@ to setup-GIS-BOR
   
   set view1 gis:load-dataset "maps/US_STATES.shp"             ;imports US State map shapefile
   
-  set view3 gis:load-dataset "maps/USBR_INPUT_4.shp"            ;inputs the USBR shapefile
+  set view3 gis:load-dataset "maps/ALL_LAKES_FINAL_1.shp"            ;inputs the USBR shapefile
   
   gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of view1) (gis:envelope-of view3))            ;creates boundary
   
